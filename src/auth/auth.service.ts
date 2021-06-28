@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as argon2 from "argon2";
 
 import { UserRepository } from "./user.repository";
 import { SignupDto } from "./dto/signup.dto";
+import { LoginDto } from "./dto/login.dto";
 import { User } from "./entities/User";
 
 @Injectable()
@@ -21,5 +22,15 @@ export class AuthService {
     }
   }
 
-  async login() {}
+  async login({ credentials, password }: LoginDto) {
+    const user = await this.userRepository.findByCredentials(credentials);
+
+    if (user) {
+      if (await argon2.verify(user.hash, password)) {
+        return user;
+      }
+    }
+
+    throw new UnauthorizedException("Invalid credentials");
+  }
 }

@@ -3,7 +3,7 @@ import { Response } from "express";
 
 import { AuthService } from "./auth.service";
 import { SignupDto } from "./dto/signup.dto";
-import { User } from "./entities/User";
+import { LoginDto } from "./dto/login.dto";
 import { JwtService } from "./jwt.service";
 import { cookieOptions } from "./utils/cookieOptions";
 
@@ -17,12 +17,15 @@ export class AuthController {
     const user = await this.authService.signup(signupDto);
     const token = this.jwtService.sign(user.id);
     res.cookie("token", token, cookieOptions);
-    console.log(user);
     return res.json(user);
   }
 
   @Post("/login")
-  login() {
-    return "hello";
+  @UsePipes(ValidationPipe)
+  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+    const user = await this.authService.login(loginDto);
+    const token = this.jwtService.sign(user.id);
+    res.cookie("token", token, cookieOptions);
+    return res.json(user);
   }
 }
