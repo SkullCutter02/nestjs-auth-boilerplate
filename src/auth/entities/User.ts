@@ -2,11 +2,12 @@ import { Column, Entity } from "typeorm";
 import { IsEmail, Matches } from "class-validator";
 
 import { Model } from "../../shared/ModelEntity";
+import { usernameRegex } from "../../shared/regexes";
 
 @Entity("users")
 export class User extends Model {
   @Column()
-  @Matches(/^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9])*$/)
+  @Matches(usernameRegex)
   username: string;
 
   @Column()
@@ -15,4 +16,8 @@ export class User extends Model {
 
   @Column()
   hash: string;
+
+  toJSON(): this {
+    return { ...this, hash: undefined };
+  }
 }
