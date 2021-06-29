@@ -3,22 +3,22 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
 import { v4 as uuid } from "uuid";
-import { getTestMessageUrl } from "nodemailer";
 
 import { UserRepository } from "./repositories/user.repository";
-import { EmailRepository } from "./repositories/email.repository";
+import { ResetEmailRepository } from "./repositories/reset-email.repository";
 import { SignupDto } from "./dto/signup.dto";
 import { User } from "./entities/user.entity";
 import { addMillisecondsToNow } from "../utils/addMillisecondsToNow";
-import { getTransporter } from "../shared/transporter";
 import { Message } from "../shared/types/Message";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserRepository) private userRepository: UserRepository,
-    @InjectRepository(EmailRepository) private emailRepository: EmailRepository,
+    @InjectRepository(ResetEmailRepository) private emailRepository: ResetEmailRepository,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async signup({ username, email, password }: SignupDto): Promise<string> {
@@ -52,17 +52,7 @@ export class AuthService {
 
     const url = `http://localhost:3000/auth/reset-password/${token}`; // TODO: change to front end link
 
-    const info = await (
-      await getTransporter()
-    ).sendMail({
-      from: "coolalan2016@gmail.com", // TODO: change email address
-      to: user.email,
-      subject: "Reset password",
-      text: url,
-      html: `<a href="${url}">${url}</a>`,
-    });
-
-    console.log(getTestMessageUrl(info)); // TODO: remove when transporter is set up with an actual smtp service
+    await this.emailService.send(user.email, url);
 
     return { message: "Email sent" };
   }

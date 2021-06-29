@@ -1,7 +1,7 @@
 import { Column, Entity } from "typeorm";
 import { IsEmail, Matches } from "class-validator";
 
-import { Model } from "../../shared/ModelEntity";
+import { Model } from "../../shared/model";
 import { usernameRegex } from "../../shared/regexes";
 
 @Entity("users")

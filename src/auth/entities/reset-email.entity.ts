@@ -1,9 +1,9 @@
 import { Column, Entity } from "typeorm";
 
-import { Model } from "../../shared/ModelEntity";
+import { Model } from "../../shared/model";
 
 @Entity("email")
-export class Email extends Model {
+export class ResetEmail extends Model {
   @Column()
   userId: string;
 
