@@ -25,4 +25,8 @@ export class AuthService {
   async login({ credentials }: LoginDto) {
     return await this.userRepository.findByCredentials(credentials);
   }
+
+  me(user: User): User {
+    return user;
+  }
 }
