@@ -31,6 +31,13 @@ export class AuthController {
     return { token };
   }
 
+  @Post("/logout")
+  @UseGuards(JwtAuthGuard)
+  logout(@Res({ passthrough: true }) res: Response): { message: string } {
+    res.clearCookie("token");
+    return { message: "Logout successful!" };
+  }
+
   @Get("/me")
   @UseGuards(JwtAuthGuard)
   async me(@Req() req: Request): Promise<User> {
