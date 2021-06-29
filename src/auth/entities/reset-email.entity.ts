@@ -2,7 +2,7 @@ import { Column, Entity } from "typeorm";
 
 import { Model } from "../../shared/model";
 
-@Entity("email")
+@Entity("reset_emails")
 export class ResetEmail extends Model {
   @Column()
   userId: string;
