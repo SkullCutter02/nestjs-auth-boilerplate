@@ -2,11 +2,13 @@ import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes, ValidationP
 import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { SignupDto } from "./dto/signup.dto";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { User } from "./entities/user.entity";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { cookieOptions } from "./utils/cookie-options";
+import { Message } from "../shared/types/Message";
 
 @Controller("auth")
 export class AuthController {
@@ -33,9 +35,15 @@ export class AuthController {
 
   @Post("/logout")
   @UseGuards(JwtAuthGuard)
-  logout(@Res({ passthrough: true }) res: Response): { message: string } {
+  logout(@Res({ passthrough: true }) res: Response): Message {
     res.clearCookie("token");
     return { message: "Logout successful!" };
+  }
+
+  @Post("/forgot-password")
+  @UsePipes(ValidationPipe)
+  async forgotPassword(@Body() { email }: ForgotPasswordDto): Promise<Message> {
+    return this.authService.forgotPassword(email);
   }
 
   @Get("/me")

@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UnauthorizedException } from "@nestjs/common";
 import { Request } from "express";
 
-import { UserRepository } from "../user.repository";
+import { UserRepository } from "../repositories/user.repository";
 import { JwtPayload } from "../../shared/types/JwtPayload";
 
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {

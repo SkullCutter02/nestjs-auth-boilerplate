@@ -4,7 +4,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as argon2 from "argon2";
 
-import { UserRepository } from "../user.repository";
+import { UserRepository } from "../repositories/user.repository";
 import { User } from "../entities/user.entity";
 
 @Injectable()
