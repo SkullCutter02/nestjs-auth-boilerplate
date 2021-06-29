@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Request } from "express";
+import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
 import { SignupDto } from "./dto/signup.dto";
-import { LoginDto } from "./dto/login.dto";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
-import { AuthenticatedGuard } from "./guards/authenticated.guard";
 import { User } from "./entities/user.entity";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { cookieOptions } from "./utils/cookie-options";
 
 @Controller("auth")
 export class AuthController {
@@ -14,20 +14,26 @@ export class AuthController {
 
   @Post("/signup")
   @UsePipes(ValidationPipe)
-  async signup(@Body() signupDto: SignupDto) {
-    return this.authService.signup(signupDto);
+  async signup(
+    @Body() signupDto: SignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ token: string }> {
+    const token = await this.authService.signup(signupDto);
+    res.cookie("token", token, cookieOptions);
+    return { token };
   }
 
   @Post("/login")
   @UseGuards(LocalAuthGuard)
-  @UsePipes(ValidationPipe)
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<{ token: string }> {
+    const token = await this.authService.login(req.user as User);
+    res.cookie("token", token, cookieOptions);
+    return { token };
   }
 
   @Get("/me")
-  @UseGuards(AuthenticatedGuard)
-  async me(@Req() req: Request) {
+  @UseGuards(JwtAuthGuard)
+  async me(@Req() req: Request): Promise<User> {
     return this.authService.me(req.user as User);
   }
 }

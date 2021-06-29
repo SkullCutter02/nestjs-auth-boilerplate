@@ -4,8 +4,8 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as argon2 from "argon2";
 
-import { UserRepository } from "./user.repository";
-import { User } from "./entities/user.entity";
+import { UserRepository } from "../user.repository";
+import { User } from "../entities/user.entity";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -23,6 +23,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     if (!(await argon2.verify(user.hash, password))) throw new UnauthorizedException("Invalid credentials");
 
+    delete user.hash;
     return user;
   }
 }
