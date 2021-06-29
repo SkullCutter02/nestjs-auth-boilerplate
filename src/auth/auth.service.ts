@@ -5,7 +5,7 @@ import * as argon2 from "argon2";
 import { UserRepository } from "./user.repository";
 import { SignupDto } from "./dto/signup.dto";
 import { LoginDto } from "./dto/login.dto";
-import { User } from "./entities/User";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class AuthService {
@@ -22,15 +22,7 @@ export class AuthService {
     }
   }
 
-  async login({ credentials, password }: LoginDto) {
-    const user = await this.userRepository.findByCredentials(credentials);
-
-    if (user) {
-      if (await argon2.verify(user.hash, password)) {
-        return user;
-      }
-    }
-
-    throw new UnauthorizedException("Invalid credentials");
+  async login({ credentials }: LoginDto) {
+    return await this.userRepository.findByCredentials(credentials);
   }
 }

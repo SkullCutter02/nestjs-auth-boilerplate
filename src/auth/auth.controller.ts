@@ -1,31 +1,24 @@
-import { Body, Controller, Post, Res, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Response } from "express";
+import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 
 import { AuthService } from "./auth.service";
 import { SignupDto } from "./dto/signup.dto";
 import { LoginDto } from "./dto/login.dto";
-import { JwtService } from "./jwt.service";
-import { cookieOptions } from "./utils/cookieOptions";
+import { LocalAuthGuard } from "./local-auth.guard";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService, private jwtService: JwtService) {}
+  constructor(private authService: AuthService) {}
 
   @Post("/signup")
   @UsePipes(ValidationPipe)
-  async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
-    const user = await this.authService.signup(signupDto);
-    const token = this.jwtService.sign(user.id);
-    res.cookie("token", token, cookieOptions);
-    return res.json(user);
+  async signup(@Body() signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
   }
 
   @Post("/login")
+  @UseGuards(LocalAuthGuard)
   @UsePipes(ValidationPipe)
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
-    const user = await this.authService.login(loginDto);
-    const token = this.jwtService.sign(user.id);
-    res.cookie("token", token, cookieOptions);
-    return res.json(user);
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 }

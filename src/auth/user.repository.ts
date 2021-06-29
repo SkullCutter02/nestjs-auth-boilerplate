@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from "typeorm";
 import { ConflictException, UnauthorizedException } from "@nestjs/common";
 
-import { User } from "./entities/User";
+import { User } from "./entities/user.entity";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
