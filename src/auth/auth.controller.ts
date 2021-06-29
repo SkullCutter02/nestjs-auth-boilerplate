@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { SignupDto } from "./dto/signup.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { User } from "./entities/user.entity";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
@@ -44,6 +45,12 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   async forgotPassword(@Body() { email }: ForgotPasswordDto): Promise<Message> {
     return this.authService.forgotPassword(email);
+  }
+
+  @Post("/reset-password")
+  @UsePipes(ValidationPipe)
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<Message> {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 
   @Get("/me")
