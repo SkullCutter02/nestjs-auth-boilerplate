@@ -1,10 +1,9 @@
-import { EntityRepository, Repository } from "typeorm";
+import { EntityRepository } from "@mikro-orm/core";
 import { ConflictException } from "@nestjs/common";
 
 import { User } from "../entities/user.entity";
 
-@EntityRepository(User)
-export class UserRepository extends Repository<User> {
+export class UserRepository extends EntityRepository<User> {
   async isExist(username: string, email: string): Promise<boolean> {
     const isEmail = !!(await this.findOne({ email }));
     const isUsername = !!(await this.findOne({ username }));

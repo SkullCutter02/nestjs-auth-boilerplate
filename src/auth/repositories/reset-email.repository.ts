@@ -1,5 +1,5 @@
-import { EntityRepository, Repository } from "typeorm";
+import { EntityRepository } from "@mikro-orm/core";
+
 import { ResetEmail } from "../entities/reset-email.entity";
 
-@EntityRepository(ResetEmail)
-export class ResetEmailRepository extends Repository<ResetEmail> {}
+export class ResetEmailRepository extends EntityRepository<ResetEmail> {}

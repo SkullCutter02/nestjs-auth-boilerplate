@@ -1,17 +1,18 @@
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { MikroOrmModuleSyncOptions } from "@mikro-orm/nestjs";
+import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 
-const ormconfig: TypeOrmModuleOptions = {
-  type: "postgres",
+const ormconfig: MikroOrmModuleSyncOptions = {
+  type: "postgresql",
   host: "localhost",
   port: 5432,
-  username: "postgres",
-  password: null,
-  database: "nestjs_test",
-  logging: true,
-  entities: [__dirname + "/../**/entities/*{.ts,.js}"],
-  migrations: [__dirname + "/../migrations/*{.ts,.js}"],
-  cli: {
-    migrationsDir: "src/migrations",
+  dbName: "nestjs_test",
+  baseDir: __dirname,
+  entities: ["../**/*.entity.js"],
+  entitiesTs: ["../**/*.entity.ts"],
+  highlighter: new SqlHighlighter(),
+  debug: process.env.NODE_ENV === "development",
+  migrations: {
+    path: __dirname + "/../migrations",
   },
 };
 

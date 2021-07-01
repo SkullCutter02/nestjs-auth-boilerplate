@@ -1,15 +1,18 @@
-import { Column, Entity } from "typeorm";
+import { Entity, EntityRepositoryType, Property } from "@mikro-orm/core";
 
-import { Model } from "../../shared/model";
+import { BaseEntity } from "../../shared/base-entity";
+import { ResetEmailRepository } from "../repositories/reset-email.repository";
 
-@Entity("reset_emails")
-export class ResetEmail extends Model {
-  @Column()
+@Entity({ tableName: "reset_emails", customRepository: () => ResetEmailRepository })
+export class ResetEmail extends BaseEntity {
+  @Property()
   userId: string;
 
-  @Column()
+  @Property()
   token: string;
 
-  @Column()
+  @Property()
   expirationDate: Date;
+
+  [EntityRepositoryType]?: ResetEmailRepository;
 }

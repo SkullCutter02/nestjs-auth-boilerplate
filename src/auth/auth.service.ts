@@ -1,14 +1,13 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { EntityManager } from "@mikro-orm/core";
 import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
 import { v4 as uuid } from "uuid";
 
-import { UserRepository } from "./repositories/user.repository";
-import { ResetEmailRepository } from "./repositories/reset-email.repository";
 import { SignupDto } from "./dto/signup.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { User } from "./entities/user.entity";
+import { ResetEmail } from "./entities/reset-email.entity";
 import { addMillisecondsToNow } from "../utils/addMillisecondsToNow";
 import { Message } from "../shared/types/Message";
 import { EmailService } from "../email/email.service";
@@ -16,19 +15,18 @@ import { EmailService } from "../email/email.service";
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserRepository) private userRepository: UserRepository,
-    @InjectRepository(ResetEmailRepository) private resetEmailRepository: ResetEmailRepository,
-    private jwtService: JwtService,
-    private emailService: EmailService,
+    private readonly em: EntityManager,
+    private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   async signup({ username, email, password }: SignupDto): Promise<string> {
-    if (await this.userRepository.isExist(username, email)) {
+    if (await this.em.getRepository(User).isExist(username, email)) {
       const hash = await argon2.hash(password);
 
-      const user = this.userRepository.create({ username, email, hash });
+      const user = this.em.getRepository(User).create({ username, email, hash });
 
-      await user.save();
+      await this.em.getRepository(User).persistAndFlush(user);
 
       return this.jwtService.sign({ id: user.id });
     }
@@ -39,19 +37,19 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<Message> {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.em.getRepository(User).findOne({ email });
 
     if (!user) throw new NotFoundException("User not found");
 
     const token = uuid();
 
-    await this.resetEmailRepository
-      .create({
-        userId: user.id,
-        token,
-        expirationDate: addMillisecondsToNow(3_600_000),
-      })
-      .save(); // 1 hour expiration
+    const resetEmail = await this.em.getRepository(ResetEmail).create({
+      userId: user.id,
+      token,
+      expirationDate: addMillisecondsToNow(3_600_000), // 1 hour expiration
+    });
+
+    await this.em.getRepository(ResetEmail).persistAndFlush(resetEmail);
 
     const url = `http://localhost:3000/auth/reset-password/${token}`; // TODO: change to front end link
 
@@ -61,23 +59,23 @@ export class AuthService {
   }
 
   async resetPassword({ token, password }: ResetPasswordDto): Promise<Message> {
-    const email = await this.resetEmailRepository.findOne({ token });
+    const email = await this.em.getRepository(ResetEmail).findOne({ token });
 
     if (!email) throw new NotFoundException("Email token not found");
 
     if (new Date(Date.now()) > email.expirationDate) {
-      await email.remove();
+      await this.em.getRepository(ResetEmail).removeAndFlush(email);
       throw new InternalServerErrorException("Reset email expiration date reached");
     }
 
-    const user = await this.userRepository.findOne(email.userId);
+    const user = await this.em.getRepository(User).findOne(email.userId);
 
     if (!user) throw new NotFoundException("User not found");
 
     user.hash = await argon2.hash(password);
 
-    await user.save();
-    await email.remove();
+    await this.em.getRepository(User).persistAndFlush(user);
+    await this.em.getRepository(ResetEmail).removeAndFlush(email);
 
     return { message: "Password reset" };
   }

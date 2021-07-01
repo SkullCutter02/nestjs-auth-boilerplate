@@ -1,21 +1,24 @@
-import { Column, Entity } from "typeorm";
+import { Entity, EntityRepositoryType, Property } from "@mikro-orm/core";
 import { IsEmail, Matches } from "class-validator";
 
-import { Model } from "../../shared/model";
+import { BaseEntity } from "../../shared/base-entity";
 import { usernameRegex } from "../../shared/regexes";
+import { UserRepository } from "../repositories/user.repository";
 
-@Entity("users")
-export class User extends Model {
-  @Column()
+@Entity({ tableName: "users", customRepository: () => UserRepository })
+export class User extends BaseEntity {
+  @Property()
   @Matches(usernameRegex)
   username: string;
 
-  @Column()
+  @Property()
   @IsEmail()
   email: string;
 
-  @Column()
+  @Property()
   hash: string;
+
+  [EntityRepositoryType]?: UserRepository;
 
   toJSON(): this {
     return { ...this, hash: undefined };

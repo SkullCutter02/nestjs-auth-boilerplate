@@ -22,6 +22,11 @@
     "typeorm": "ts-node node_modules/typeorm/cli.js --config src/config/ormconfig.ts"
   },
   "dependencies": {
+    "@mikro-orm/cli": "^4.5.7",
+    "@mikro-orm/core": "^4.5.7",
+    "@mikro-orm/nestjs": "^4.2.0",
+    "@mikro-orm/postgresql": "^4.5.7",
+    "@mikro-orm/sql-highlighter": "^1.0.1",
     "@nestjs/common": "^7.6.15",
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
@@ -87,5 +92,12 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/config/ormconfig.ts",
+      "./dist/config/ormconfig.js"
+    ]
   }
 }

@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -8,7 +8,7 @@ import { EmailModule } from "./email/email.module";
 import ormconfig from "./config/ormconfig";
 
 @Module({
-  imports: [TypeOrmModule.forRoot(ormconfig), AuthModule, EmailModule],
+  imports: [MikroOrmModule.forRoot(ormconfig), AuthModule, EmailModule],
   controllers: [AppController],
   providers: [AppService],
 })
