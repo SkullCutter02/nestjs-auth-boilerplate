@@ -5,9 +5,9 @@ import * as argon2 from "argon2";
 import { v4 as uuid } from "uuid";
 
 import { SignupDto } from "./dto/signup.dto";
-import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { ResetPasswordDto } from "./dto/resetPassword.dto";
 import { User } from "./entities/user.entity";
-import { ResetEmail } from "./entities/reset-email.entity";
+import { ResetEmail } from "./entities/resetEmail.entity";
 import { addMillisecondsToNow } from "../utils/addMillisecondsToNow";
 import { Message } from "../shared/types/Message";
 import { EmailService } from "../email/email.service";

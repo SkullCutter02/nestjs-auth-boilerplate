@@ -1,12 +1,12 @@
 import { Entity, EntityRepositoryType, Property } from "@mikro-orm/core";
 import { IsEmail, Matches } from "class-validator";
 
-import { BaseEntity } from "../../shared/base-entity";
+import { BaseEntityEntity } from "../../shared/baseEntity.entity";
 import { usernameRegex } from "../../shared/regexes";
 import { UserRepository } from "../repositories/user.repository";
 
 @Entity({ tableName: "users", customRepository: () => UserRepository })
-export class User extends BaseEntity {
+export class User extends BaseEntityEntity {
   @Property()
   @Matches(usernameRegex)
   username: string;
