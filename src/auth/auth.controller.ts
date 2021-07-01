@@ -38,7 +38,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   logout(@Res({ passthrough: true }) res: Response): Message {
     res.clearCookie("token");
-    return { message: "Logout successful!" };
+    return { message: "Logout successful" };
   }
 
   @Post("/forgot-password")
