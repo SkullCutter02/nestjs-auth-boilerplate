@@ -19,9 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:e2e:watch": "jest --config ./test/jest-e2e.json --watch",
-    "typeorm": "ts-node node_modules/typeorm/cli.js --config src/config/ormconfig.ts"
-  },
+    "test:e2e:watch": "jest --config ./test/jest-e2e.json --watch"
+  }, 
   "dependencies": {
     "@mikro-orm/cli": "^4.5.7",
     "@mikro-orm/core": "^4.5.7",
