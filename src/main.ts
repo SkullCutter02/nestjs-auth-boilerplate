@@ -1,5 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import cookieParser from "cookie-parser";
+import atob from "atob";
+import nodeBlob from "node-blob";
 
 import { AppModule } from "./app.module";
 
