@@ -13,6 +13,7 @@ const ormconfig: MikroOrmModuleSyncOptions = {
   debug: process.env.NODE_ENV === "development",
   migrations: {
     path: __dirname + "/../migrations",
+    dropTables: false,
   },
 };
 
